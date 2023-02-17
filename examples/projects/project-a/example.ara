@@ -1,0 +1,5 @@
+$b = match $a {
+    1 => 2,
+    2 => 3,
+    default => "string",
+};

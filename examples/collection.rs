@@ -11,30 +11,22 @@ use ara_source::source::Source;
 use ara_source::source::SourceKind;
 use ara_source::SourceMap;
 
-fn main() -> Result<(), Error> {
-    let first_origin = "example.ara";
-    let first_code = r#"
-$b = match $a {
-    1 => 2,
-    2 => 3,
-    default => "string",
-};
-"#;
+const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
+fn main() -> Result<(), Error> {
+    let project_root = format!("{MANIFEST_DIR}/examples/projects/project-a");
+    let first_origin = "example.ara";
     let second_origin = "example-2.ara";
-    let second_code = r#"
-function foo(Bar&float) {}
-"#;
 
     let map = SourceMap::new(vec![
-        Source::new(SourceKind::Script, first_origin, first_code),
-        Source::new(SourceKind::Script, second_origin, second_code),
+        Source::new(SourceKind::Script, &project_root, first_origin),
+        Source::new(SourceKind::Script, &project_root, second_origin),
     ]);
 
     let first_report = Report::new()
         .with_issue(
             Issue::error("E0417", "`match` arms have incompatible types")
-                .with_source(first_origin, 6, 67)
+                .with_source(first_origin, 5, 67)
                 .with_annotation(
                     Annotation::secondary(first_origin, 26, 27)
                         .with_message("this is found to be of type `{int}`"),
@@ -60,7 +52,7 @@ function foo(Bar&float) {}
                 "P0015",
                 "scalar type `float` cannot be used in an intersection",
             )
-            .with_source(second_origin, 18, 23)
+            .with_source(second_origin, 17, 23)
             .with_annotation(
                 Annotation::secondary(second_origin, 17, 19)
                     .with_message("scalar type `float` cannot be used in an intersection"),

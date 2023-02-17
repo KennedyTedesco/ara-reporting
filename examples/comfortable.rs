@@ -12,9 +12,8 @@ use ara_source::SourceMap;
 
 fn main() -> Result<(), Error> {
     let map = SourceMap::new(vec![
-        Source::new(
+        Source::inline(
             SourceKind::Script,
-            "src/main.ara",
             r#"
 use function Math\add;
 
@@ -25,9 +24,8 @@ function main(): int {
 }
 "#,
         ),
-        Source::new(
+        Source::inline(
             SourceKind::Script,
-            "vendor/some-vendor/some-lib/src/add.ara",
             r#"
 namespace Math;
 

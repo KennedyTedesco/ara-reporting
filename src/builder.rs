@@ -71,7 +71,7 @@ pub struct ReportBuilder<'a> {
 /// ]);
 ///
 /// let builder = ReportBuilder::new(&source);
-/// assert_eq!(builder.source_map.sources[0].content, "function main(): void {}");
+/// assert_eq!(builder.source_map.sources[0].content.as_ref().unwrap().as_str(), "function main(): void {}");
 /// ```
 impl ReportBuilder<'_> {
     /// Create a new report builder.
@@ -252,12 +252,16 @@ impl ReportBuilder<'_> {
 
         let mut files = SimpleFiles::new();
         let mut files_ids = FxHashMap::default();
-        self.source_map.sources.iter().for_each(|source| {
+        for source in self.source_map.sources.iter() {
+            let mut file_source = source.clone();
             files_ids.insert(
-                source.name().to_string(),
-                files.add(source.name(), &source.content),
+                file_source.name().to_string(),
+                files.add(
+                    source.name(),
+                    file_source.content().map_err(Error::Io)?.to_string(),
+                ),
             );
-        });
+        }
 
         for report in reportable.to_reports() {
             let diagnostics = self.diagnostics(report, &files_ids);

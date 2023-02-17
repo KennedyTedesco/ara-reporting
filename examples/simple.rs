@@ -20,7 +20,7 @@ $b = match $a {
 };
 "#;
 
-    let map = SourceMap::new(vec![Source::new(SourceKind::Script, origin, code)]);
+    let map = SourceMap::new(vec![Source::inline(SourceKind::Script, code)]);
 
     let report = Report::new()
         .with_issue(
