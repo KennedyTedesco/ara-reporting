@@ -254,12 +254,10 @@ impl ReportBuilder<'_> {
         let mut files_ids = FxHashMap::default();
         for source in self.source_map.sources.iter() {
             let mut file_source = source.clone();
+            let content = file_source.content().map_err(Error::Io)?.to_string();
             files_ids.insert(
                 file_source.name().to_string(),
-                files.add(
-                    source.name(),
-                    file_source.content().map_err(Error::Io)?.to_string(),
-                ),
+                files.add(source.name(), content),
             );
         }
 
